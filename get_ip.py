@@ -11,7 +11,12 @@ def get_ip_worker(s, n):
     """"Yield partial IP addresses from s with n left to find"""
     if n == 0 and len(s) > 0:
         return
-    for i in range(3):
+    if n == 0 and len(s) == 0:
+        yield []
+        return
+    if len(s) < n:
+        return
+    for i in range(1, 4):
         prefix = s[:i]
         if int(prefix) < 255:
             yield from ([prefix] + suffix for suffix in get_ip_worker(s[i:], n-1))
