@@ -24,6 +24,13 @@ def test_no_ips_if_too_small(n):
     assert ips == []
 
 
+@given(integers(1_000_000_000_000, 100_000_000_000_000))
+def test_no_ips_if_too_big(n):
+    ips = list(get_ip(str(n)))
+    for ip in ips:
+        assert is_ip(ip)
+
+
 @given(integers(1000, 300000000000))
 def test_all_are_ips(n):
     ips = list(get_ip(str(n)))
