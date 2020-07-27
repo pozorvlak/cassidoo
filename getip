@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+"""Given a string S containing only digits, write a function that returns a list
+containing all possible combinations of valid IPv4 IP addresses."""
+
+def get_ip(s):
+    return (".".join(ip) for ip in get_ip_worker(s, [], 4))
+
+
+def get_ip_worker(s, n):
+    """"Yield partial IP addresses from s with n left to find"""
+    if n == 0 and len(s) > 0:
+    	return
+    for i in range(3):
+    	prefix = s[:i]
+	if int(prefix) < 255:
+	    yield from ([prefix] + suffix for suffix in get_ip_worker(s[i:], n-1)
+
+
+if __name__ == '__main__':
+    assert get_ip('11211') == [
+        '1.1.2.11',
+	'1.1.21.1',
+	'1.12.1.1',
+	'11.2.1.1',
+    ]
+
