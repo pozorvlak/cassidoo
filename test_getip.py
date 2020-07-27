@@ -18,6 +18,12 @@ def no_dots(ip):
     return "".join(ip.split("."))
 
 
+@given(integers(0, 999))
+def test_no_ips_if_too_small(n):
+    ips = list(get_ip(str(n)))
+    assert ips == []
+
+
 @given(integers(1000, 300000000000))
 def test_all_are_ips(n):
     ips = list(get_ip(str(n)))
