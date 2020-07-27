@@ -9,18 +9,18 @@ def get_ip(s):
 
 def get_ip_worker(s, n):
     """"Yield partial IP addresses from s with n left to find"""
-    if n == 0 and len(s) > 0:
-        return
-    if n == 0 and len(s) == 0:
-        yield []
-        return
     if len(s) < n:
+        return
+    if len(s) > 3 * n:
+        return
+    if n == 0:
+        yield []
         return
     if s[0] == '0':
         # Leading zeros are not allowed, so the next component must be 0
         yield from (['0'] + suffix for suffix in get_ip_worker(s[1:], n-1))
         return
-    for i in range(1, 4):
+    for i in range(1, len(s) - n + 2):
         prefix = s[:i]
         if int(prefix) < 256:
             yield from ([prefix] + suffix for suffix in get_ip_worker(s[i:], n-1))
