@@ -18,5 +18,6 @@ def get_ip_worker(s, n):
         return
     for i in range(1, 4):
         prefix = s[:i]
-        if int(prefix) < 255:
+        if int(prefix) < 256:
+            # TODO strip out leading zeros
             yield from ([prefix] + suffix for suffix in get_ip_worker(s[i:], n-1))
