@@ -16,7 +16,7 @@ constraint end[4] = n;
 constraint forall(i in 1..3)(start[i+1] == end[i]);
 constraint forall(i in 1..3)(start[i] < start[i+1]);
 % leading zeros are not allowed
-constraint forall(i in 1..3)(s[start[i]+1] == 0 -> end[i] == start[i] + 1);
+constraint forall(i in 1..4)(s[start[i]+1] == 0 -> end[i] == start[i] + 1);
 
 constraint forall(i in 1..4)(
   sum([10^j * s[end[i] - j] | j in 0..(end[i] - start[i] - 1)]) == ip_address[i]
