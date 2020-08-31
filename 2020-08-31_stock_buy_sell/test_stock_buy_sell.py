@@ -22,4 +22,7 @@ def test_example():
 
 @given(lists(integers(), min_size=2))
 def test_brute_force(prices):
-    assert stock_buy_sell(prices) == stock_buy_sell_quadratic(prices)
+    sut_buy, sut_sell = stock_buy_sell(prices)
+    oracle_buy, oracle_sell = stock_buy_sell_quadratic(prices)
+    assert (prices[sut_sell - 1] - prices[sut_buy - 1]
+        == prices[oracle_sell - 1] - prices[oracle_buy - 1])
