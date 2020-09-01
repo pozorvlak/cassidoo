@@ -6,7 +6,7 @@ from stock_buy_sell import stock_buy_sell
 
 def intervals(n):
     for i in range(n):
-        for j in range(i+1, n):
+        for j in range(i, n):
             yield (i, j)
 
 
@@ -31,4 +31,4 @@ def test_brute_force(prices):
 @given(lists(integers(), min_size=2))
 def test_sell_after_buy(prices):
     buy, sell = stock_buy_sell(prices)
-    assert sell > buy
+    assert sell >= buy
