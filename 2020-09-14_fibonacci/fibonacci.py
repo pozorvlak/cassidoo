@@ -31,3 +31,7 @@ def fibonacci_like(xs):
 
 def test_example():
     assert fibonacci_like([1, 3, 7, 11, 12, 14, 18]) == 3
+
+
+def test_fibonacci():
+    assert fibonacci_like([1, 1, 2, 3, 5, 8]) == 6
