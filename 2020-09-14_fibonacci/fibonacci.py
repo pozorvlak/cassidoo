@@ -10,11 +10,10 @@ $ fibonacciLike([1,3,7,11,12,14,18])
 $ 3 // these sequences: [1,11,12], [3,11,14] or [7,11,18]
 """
 
+
 def fibonacci_like(xs):
     best = 0
-    indices = {}
-    for i, x in enumerate(xs):
-        indices[x] = i
+    indices = {x: i for i, x in enumerate(xs)}
     for i in range(len(xs) - 2):
         for j in range(i + 1, len(xs) - 1):
             current = 2
@@ -31,5 +30,4 @@ def fibonacci_like(xs):
 
 
 def test_example():
-    assert fibonacci_like([1,3,7,11,12,14,18]) == 3
-
+    assert fibonacci_like([1, 3, 7, 11, 12, 14, 18]) == 3
