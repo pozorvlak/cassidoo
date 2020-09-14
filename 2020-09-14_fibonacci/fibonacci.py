@@ -10,17 +10,26 @@ $ fibonacciLike([1,3,7,11,12,14,18])
 $ 3 // these sequences: [1,11,12], [3,11,14] or [7,11,18]
 """
 
+from collections import defaultdict
+
+
 def fibonacci_like(xs):
     best = 0
-    current = 0
+    indices = defaultdict(list)
+    for i, x in enumerate(xs):
+        indices[x].append(i)
     for i in range(len(xs) - 2):
-        if xs[i] + xs[i+1] == xs[i+2]:
-            current += 1
-            if current > best:
-                best = current
-        else:
-            current = 0
-        print(i, xs[i], current)
+        for j in range(i + 1, len(xs) - 1):
+            current = 2
+            while True:
+                k = next((k for k in indices[xs[i] + xs[j]] if k > j), None)
+                if k is not None:
+                    current += 1
+                    i, j = j, k
+                else:
+                    if current > 2 and current > best:
+                        best = current
+                    break
     return best
 
 
