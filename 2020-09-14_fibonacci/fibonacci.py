@@ -15,18 +15,14 @@ from itertools import combinations
 
 def fibonacci_like(xs):
     best = 0
-    indices = {x: i for i, x in enumerate(xs)}
-    for i, j in combinations(range(len(xs) -1), 2):
+    seen = set(xs)
+    for x, y in combinations(xs[:-1], 2):
         current = 2
-        while True:
-            k = indices.get(xs[i] + xs[j], None)
-            if k is not None:
-                current += 1
-                i, j = j, k
-            else:
-                if current > 2 and current > best:
-                    best = current
-                break
+        while x + y in seen:
+            current += 1
+            x, y = y, x + y
+        if current > 2 and current > best:
+            best = current
     return best
 
 
