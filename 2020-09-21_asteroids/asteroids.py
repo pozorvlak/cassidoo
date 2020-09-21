@@ -28,3 +28,7 @@ def test_equal_size():
 
 def test_multiple_annihilation():
     assert asteroids([4, 1, 2, -3]) == [4]
+
+
+def test_nothing_happens():
+    assert asteroids([-1, 1]) == [-1, 1]
