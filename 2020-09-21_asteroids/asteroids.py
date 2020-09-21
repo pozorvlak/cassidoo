@@ -11,7 +11,31 @@ explode. Asteroids moving in the same direction will never meet.
 
 
 def asteroids(sizes):
-    return sizes
+    lefts, rights, indices = [], [], []
+    i = 0
+    for size in sizes:
+        if size < 0:
+            lefts.append(-size)
+            indices.append(i)
+        else:
+            rights.append(size)
+            i += 1
+    if len(indices) == 0:
+        return rights
+    for turns in range(max(indices)):
+        for i, size in enumerate(lefts):
+            pos = indices[i] - 1
+            if pos < 0:
+                continue
+            right_size = rights[pos]
+            if size >= right_size:
+                rights.pop(pos)
+                for j in range(i+1, len(lefts)):
+                    indices[j] -= 1
+            if size <= right_size:
+                lefts.pop(i)
+            indices[i] = pos
+    return [-l for l in lefts] + rights
 
 
 def test_example():
