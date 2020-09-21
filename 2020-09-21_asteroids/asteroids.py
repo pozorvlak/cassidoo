@@ -24,3 +24,7 @@ def test_all_same_direction():
 
 def test_equal_size():
     assert asteroids([5, -5]) == []
+
+
+def test_multiple_annihilation():
+    assert asteroids([4, 1, 2, -3]) == [4]
