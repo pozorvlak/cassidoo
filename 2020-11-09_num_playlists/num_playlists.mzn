@@ -15,7 +15,11 @@ array[SONG] of var set of PLAY: plays;
 
 include "globals.mzn";
 constraint int_set_channel(playlist, plays);
-constraint forall(s in SONG)(card(plays[s]) > 0); % every song is played at least once
+
+% every song is played at least once
+constraint forall(s in SONG)(card(plays[s]) > 0);
+
+% there's a gap of at least K songs before a song is played again
 constraint forall(s in SONG)(
   let { var set of PLAY: ps = plays[s]; } in
   forall(p1 in ps, p2 in ps)(
@@ -24,3 +28,5 @@ constraint forall(s in SONG)(
 );
 
 solve satisfy;
+
+output [];

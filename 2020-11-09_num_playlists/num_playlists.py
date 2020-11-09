@@ -12,6 +12,7 @@ import math
 
 from hypothesis import given
 import hypothesis.strategies as st
+from minizinc import Instance, Model, Solver
 
 #====================================================================
 # Solution 1: recursively calculate the actual playlists
@@ -44,6 +45,8 @@ def num_playlists(n, l, k):
 
 #====================================================================
 # Solution 2: recursively calculate the number of playlists
+#
+# This is about twice as fast as explicitly calculating the playlists
 #====================================================================
 def go2(available, l, recent, unused):
     if l < 1:
@@ -63,6 +66,31 @@ def go2(available, l, recent, unused):
 
 def num_playlists2(n, l, k):
     return go2(set(range(n)), l, [None] * k, set(range(n)))
+
+
+#====================================================================
+# Solution 3: call a constraint-propagation solver with MiniZinc
+#
+# This is over 100x slower than solution 2 :-(
+#====================================================================
+def go3(n, l, k):
+    chuffed = Solver.lookup("chuffed") # much faster than Gecode
+    model = Model("./num_playlists.mzn")
+    instance = Instance(chuffed, model)
+    instance["N"] = n
+    instance["L"] = l
+    instance["K"] = k
+    return instance.solve(all_solutions=True)
+
+
+def playlists3(n, l, k):
+    result = go3(n, l, k)
+    one_indexed_playlists = [result[i, "playlist"] for i in range(len(result))]
+    return [[i - 1 for i in playlist] for playlist in one_indexed_playlists]
+
+
+def num_playlists3(n, l, k):
+    return len(playlists3(n, l, k))
 
 
 #====================================================================
@@ -103,6 +131,13 @@ def test_n_equals_l(n, k):
 def test_list_too_short(diff, l, k):
     assert num_playlists2(l + diff, l, k) == 0
 
+
 @given(st.integers(1, 5), st.integers(1, 5), st.integers(1, 5))
 def test_solutions_agree(n, l, k):
     assert num_playlists(n, l, k) == num_playlists2(n, l, k)
+    assert num_playlists3(n, l, k) == num_playlists2(n, l, k)
+
+
+@given(st.integers(1, 3), st.integers(1, 5), st.integers(1, 3))
+def test_explicit_solutions_agree(n, l, k):
+    assert sorted(playlists(n, l, k)) == sorted(playlists3(n, l, k))
