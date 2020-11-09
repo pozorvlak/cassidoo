@@ -1,0 +1,6 @@
+{
+    "all-satisfaction": true,
+    "intermediate-solutions": true,
+    "solver": "org.chuffed.chuffed@0.10.4",
+    "solver-statistics": true
+}
