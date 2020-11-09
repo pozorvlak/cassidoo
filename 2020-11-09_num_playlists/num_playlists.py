@@ -55,3 +55,8 @@ def test_constraints_hold(n, l, k):
         assert set(playlist) == set(range(n))
         for i, p in enumerate(playlist[:k]):
             assert p not in playlist[i + 1: i + k]
+
+
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(1, 5))
+def test_list_too_short(diff, l, k):
+    assert num_playlists(l + diff, l, k) == 0
