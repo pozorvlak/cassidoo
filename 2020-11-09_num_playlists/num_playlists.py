@@ -71,12 +71,15 @@ def num_playlists2(n, l, k):
 #====================================================================
 # Solution 3: call a constraint-propagation solver with MiniZinc
 #
-# This is over 100x slower than solution 2 :-(
+# This is over 50x slower than solution 2 :-(
 #====================================================================
 def go3(n, l, k):
-    chuffed = Solver.lookup("chuffed") # much faster than Gecode
+    # The supplied MIP solver doesn't support the "all_solutions"
+    # flag, so we must use a CP solver. It's still about 2x faster
+    # to use a MIP-style model, though.
+    solver = Solver.lookup("chuffed")
     model = Model("./num_playlists.mzn")
-    instance = Instance(chuffed, model)
+    instance = Instance(solver, model)
     instance["N"] = n
     instance["L"] = l
     instance["K"] = k
@@ -138,6 +141,6 @@ def test_solutions_agree(n, l, k):
     assert num_playlists3(n, l, k) == num_playlists2(n, l, k)
 
 
-@given(st.integers(1, 3), st.integers(1, 5), st.integers(1, 3))
+@given(st.integers(1, 3), st.integers(1, 5), st.integers(1, 5))
 def test_explicit_solutions_agree(n, l, k):
     assert sorted(playlists(n, l, k)) == sorted(playlists3(n, l, k))
