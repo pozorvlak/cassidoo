@@ -27,11 +27,14 @@ def go(available, l, recent, unused):
         for perm in itertools.permutations(unused):
             yield list(perm)
         return
-    b = recent[0]
-    new_available = available | {b} if b is not None else available
     for a in available:
-        new_recent = recent[1:] + [a]
-        for tail in go(new_available - {a}, l - 1, new_recent, unused - {a}):
+        # Update the queue inside the loop, to handle the case k = 0
+        new_recent = [a] + recent
+        b = new_recent.pop()
+        new_available = available - {a}
+        if b is not None:
+            new_available = new_available | {b}
+        for tail in go(new_available, l - 1, new_recent, unused - {a}):
             yield [a] + tail
 
 
@@ -55,12 +58,15 @@ def go2(available, l, recent, unused):
         return 0
     if l == len(unused):
         return math.factorial(len(unused))
-    b = recent[0]
-    new_available = available | {b} if b is not None else available
     count = 0
     for a in available:
-        new_recent = recent[1:] + [a]
-        count += go2(new_available - {a}, l - 1, new_recent, unused - {a})
+        # Update the queue inside the loop, to handle the case k = 0
+        new_recent = [a] + recent
+        b = new_recent.pop()
+        new_available = available - {a}
+        if b is not None:
+            new_available = new_available | {b}
+        count += go2(new_available, l - 1, new_recent, unused - {a})
     return count
 
 
@@ -103,12 +109,12 @@ def test_example():
     assert num_playlists(3, 3, 1) == 6
 
 
-@given(st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 5), st.integers(0, 5))
 def test_n_equals_l(n, k):
     assert num_playlists(n, n, k) == math.factorial(n)
 
 
-@given(st.integers(1, 5), st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
 def test_constraints_hold(n, l, k):
     for playlist in playlists(n, l, k):
         assert set(playlist) == set(range(n))
@@ -116,7 +122,7 @@ def test_constraints_hold(n, l, k):
             assert p not in playlist[i + 1: i + k]
 
 
-@given(st.integers(1, 5), st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
 def test_list_too_short(diff, l, k):
     assert num_playlists(l + diff, l, k) == 0
 
@@ -125,22 +131,25 @@ def test_example2():
     assert num_playlists2(3, 3, 1) == 6
 
 
-@given(st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 5), st.integers(0, 5))
 def test_n_equals_l(n, k):
     assert num_playlists2(n, n, k) == math.factorial(n)
 
 
-@given(st.integers(1, 5), st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
 def test_list_too_short(diff, l, k):
     assert num_playlists2(l + diff, l, k) == 0
 
 
-@given(st.integers(1, 5), st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
 def test_solutions_agree(n, l, k):
-    assert num_playlists(n, l, k) == num_playlists2(n, l, k)
-    assert num_playlists3(n, l, k) == num_playlists2(n, l, k)
+    n1 = num_playlists(n, l, k)
+    n2 = num_playlists2(n, l, k)
+    n3 = num_playlists3(n, l, k)
+    assert n1 == n2
+    assert n3 == n2
 
 
-@given(st.integers(1, 3), st.integers(1, 5), st.integers(1, 5))
+@given(st.integers(1, 3), st.integers(1, 5), st.integers(0, 5))
 def test_explicit_solutions_agree(n, l, k):
     assert sorted(playlists(n, l, k)) == sorted(playlists3(n, l, k))
