@@ -21,7 +21,7 @@ constraint forall(s in SONG)(sum(p in PLAY)(plays[p, s]) > 0);
 
 % there's a gap of at least K songs before a song is played again
 constraint forall(s in SONG)(
-  forall(p in 1..L-K)(sum(i in 0..K)(plays[p+i, s]) <= 1)
+  forall(p in 1..L)(sum(i in 0..min(K, L-p))(plays[p+i, s]) <= 1)
 );
 
 % output the playlist
