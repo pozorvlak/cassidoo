@@ -8,6 +8,8 @@ if K other songs have been played. Return the number of possible playlists.
 """
 
 import itertools
+from functools import reduce, lru_cache
+from operator import mul
 import math
 
 from hypothesis import given
@@ -103,6 +105,71 @@ def num_playlists3(n, l, k):
 
 
 #====================================================================
+# Solution 4: dynamic programming
+#
+# Translated from Ten Zhi-Yang (@tzyinc)'s JavaScript solution:
+# https://codepen.io/Tzyinc/pen/VwjgLrW?editors=0011
+#====================================================================
+def num_playlists_dp(n, l, k):
+    playlists = [[0] * (n + 1)] * (l + 1)
+    playlists[0][0] = 1
+    for i in range(1, l + 1):
+        for j in range(1, n + 1):
+            playlists[i][j] += playlists[i - 1][j - 1] * (n - j + 1)
+            playlists[i][j] += playlists[i - 1][j] * max(j - k, 0)
+    return playlists[l][n]
+
+
+#====================================================================
+# Solution 5: fold over a list
+#
+# Translated from Sameer Kolhar (@kolharsam)'s Haskell solution:
+# https://repl.it/@SameerKolhar/Cassidys-Interview-Question-November-9#main.hs
+#====================================================================
+def product(xs):
+    return reduce(mul, xs)
+
+
+def num_playlists_fold(n, l, k):
+    if n > l:
+        return product(range(n - l + 1, n + 1))
+    if n == l:
+        return math.factorial(n)
+    return product(
+            reduce(
+                lambda acc, x: [n] + acc if x % k == 0 else [acc[0] - 1] + acc,
+                range(l, 0, -1),
+                [n]
+            )
+        )
+
+
+#====================================================================
+# Solution 5: Stirling numbers
+#
+# Translated from Roman Gusev (@9z3)'s JavaScript solution:
+# https://gist.github.com/102/4e52d86a0e93dbb20568974e588acab1#file-index-js
+#====================================================================
+@lru_cache(maxsize=None)
+def stirling2(n, k):
+    if n == k:
+        return 1
+    if n == 0 or k == 0:
+        return 0
+    if k > n:
+        return 0
+    return k * stirling2(n - 1, k) + stirling2(n - 1, k - 1)
+
+
+def num_playlists_stirling(n, l, k):
+    if n > l or (k > n and n < l) or n == 0 or l == 0:
+        return 0
+    if n == l:
+        return math.factorial(n)
+    return math.factorial(n) * stirling2(l - k, n - k)
+
+
+#====================================================================
 # Tests
 #====================================================================
 def test_example():
@@ -153,3 +220,24 @@ def test_solutions_agree(n, l, k):
 @given(st.integers(1, 3), st.integers(1, 5), st.integers(0, 5))
 def test_explicit_solutions_agree(n, l, k):
     assert sorted(playlists(n, l, k)) == sorted(playlists3(n, l, k))
+
+
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
+def test_dp_solution_agrees(n, l, k):
+    n2 = num_playlists2(n, l, k)
+    n4 = num_playlists_dp(n, l, k)
+    assert n4 == n2
+
+
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
+def test_fold_solution_agrees(n, l, k):
+    n2 = num_playlists2(n, l, k)
+    n5 = num_playlists_fold(n, l, k)
+    assert n5 == n2
+
+
+@given(st.integers(1, 5), st.integers(1, 5), st.integers(0, 5))
+def test_stirling_solution_agrees(n, l, k):
+    n2 = num_playlists2(n, l, k)
+    n6 = num_playlists_stirling(n, l, k)
+    assert n6 == n2
