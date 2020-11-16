@@ -11,6 +11,7 @@ import itertools
 from functools import reduce, lru_cache
 from operator import mul
 import math
+import sys
 
 from hypothesis import given
 import hypothesis.strategies as st
@@ -241,3 +242,26 @@ def test_stirling_solution_agrees(n, l, k):
     n2 = num_playlists2(n, l, k)
     n6 = num_playlists_stirling(n, l, k)
     assert n6 == n2
+
+
+def main(other_index):
+    other_funcs = [
+            num_playlists,
+            num_playlists2,
+            num_playlists3,
+            num_playlists_dp,
+            num_playlists_fold,
+            num_playlists_stirling
+        ]
+    other_func = other_funcs[other_index - 1]
+    for n in range(1, 15):
+        for l in range(1, 15):
+            for k in range(1, 15):
+                mine = num_playlists2(n, l, k)
+                other = other_func(n, l, k)
+                if mine != other:
+                    print(f"n={n}, l={l}, k={k}, mine={mine}, other={other}")
+
+
+if __name__ == '__main__':
+    main(int(sys.argv[1]))
