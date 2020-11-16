@@ -11,22 +11,21 @@ set of int: SONG = 1..N;
 set of int: PLAY = 1..L;
 
 array[PLAY] of var SONG: playlist;
-array[PLAY, SONG] of var bool: plays;
+array[SONG] of var set of PLAY: plays;
 
-% every slot contains exactly one song
-constraint forall(p in PLAY)(sum(s in SONG)(plays[p, s]) = 1);
+include "globals.mzn";
+constraint int_set_channel(playlist, plays);
+constraint seq_precede_chain(playlist);
 
 % every song is played at least once
-constraint forall(s in SONG)(sum(p in PLAY)(plays[p, s]) > 0);
+constraint forall(s in SONG)(card(plays[s]) > 0);
 
 % there's a gap of at least K songs before a song is played again
 constraint forall(s in SONG)(
-  forall(p in 1..L)(sum(i in 0..min(K, L-p))(plays[p+i, s]) <= 1)
+  let { var set of PLAY: ps = plays[s]; } in
+  forall(p1 in ps, p2 in ps)(
+    p1 == p2 \/ abs(p1 - p2) > K
+  )
 );
 
-% output the playlist
-constraint forall(p in PLAY)(playlist[p] = sum(s in SONG)(s * plays[p, s]));
-  
 solve satisfy;
-
-output [ "playlist = \(playlist);\n" ]

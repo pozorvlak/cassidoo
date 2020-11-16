@@ -82,12 +82,12 @@ def num_playlists2(n, l, k):
 #
 # This is over 50x slower than solution 2 :-(
 #====================================================================
-def go3(n, l, k):
+def call_minizinc(model_file, n, l, k):
     # The supplied MIP solver doesn't support the "all_solutions"
     # flag, so we must use a CP solver. It's still about 2x faster
     # to use a MIP-style model, though.
     solver = Solver.lookup("chuffed")
-    model = Model("./num_playlists.mzn")
+    model = Model(model_file)
     instance = Instance(solver, model)
     instance["N"] = n
     instance["L"] = l
@@ -96,13 +96,13 @@ def go3(n, l, k):
 
 
 def playlists3(n, l, k):
-    result = go3(n, l, k)
+    result = call_minizinc("./num_playlists_mip.mzn", n, l, k)
     one_indexed_playlists = [result[i, "playlist"] for i in range(len(result))]
     return [[i - 1 for i in playlist] for playlist in one_indexed_playlists]
 
 
 def num_playlists3(n, l, k):
-    return len(playlists3(n, l, k))
+    return len(call_minizinc("./num_playlists_mip.mzn", n, l, k))
 
 
 #====================================================================
@@ -168,6 +168,13 @@ def num_playlists_stirling(n, l, k):
     if n == l:
         return math.factorial(n)
     return math.factorial(n) * stirling2(l - k, n - k)
+
+
+#====================================================================
+# Solution 6: Constraint-propagation with global constraint
+#====================================================================
+def num_playlists_cp(n, l, k):
+    return len(call_minizinc("./num_playlists_cp.mzn", n, l, k)) * math.factorial(n)
 
 
 #====================================================================
@@ -251,7 +258,8 @@ def main(other_index):
             num_playlists3,
             num_playlists_dp,
             num_playlists_fold,
-            num_playlists_stirling
+            num_playlists_stirling,
+            num_playlists_cp
         ]
     other_func = other_funcs[other_index - 1]
     for n in range(1, 15):
