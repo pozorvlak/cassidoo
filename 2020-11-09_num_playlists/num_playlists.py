@@ -22,9 +22,6 @@ import pytest
 # Solution 1: recursively calculate the actual playlists
 #====================================================================
 def go(available, l, recent, unused):
-    if l < 1:
-        yield []
-        return
     if l < len(unused):
         return
     if l == len(unused):
@@ -56,8 +53,6 @@ def num_playlists(n, l, k):
 # This is about twice as fast as explicitly calculating the playlists
 #====================================================================
 def go2(available, l, recent, unused):
-    if l < 1:
-        return 1
     if l < len(unused):
         return 0
     if l == len(unused):
@@ -164,10 +159,10 @@ def stirling2(n, k):
 
 
 def num_playlists_stirling(n, l, k):
-    if n > l or (k > n and n < l) or n == 0 or l == 0:
-        return 0
     if n == l:
         return math.factorial(n)
+    if n > l or (k > n and n < l) or n == 0 or l == 0:
+        return 0
     return math.factorial(n) * stirling2(l - k, n - k)
 
 
@@ -264,9 +259,9 @@ def main(other_index):
             num_playlists_cp
         ]
     other_func = other_funcs[other_index - 1]
-    for n in range(1, 15):
-        for l in range(1, 15):
-            for k in range(1, 15):
+    for n in range(0, 15):
+        for l in range(0, 15):
+            for k in range(0, 15):
                 mine = num_playlists2(n, l, k)
                 other = other_func(n, l, k)
                 if mine != other:
