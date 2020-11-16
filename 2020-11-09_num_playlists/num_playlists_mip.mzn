@@ -27,6 +27,10 @@ constraint forall(s in SONG)(
 % output the playlist
 constraint forall(p in PLAY)(playlist[p] = sum(s in SONG)(s * plays[p, s]));
 
+% break symmetries
+include "globals.mzn";
+constraint seq_precede_chain(playlist);
+
 solve satisfy;
 
 output [ "playlist = \(playlist);\n" ]
