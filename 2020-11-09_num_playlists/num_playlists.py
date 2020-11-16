@@ -112,7 +112,7 @@ def num_playlists3(n, l, k):
 # https://codepen.io/Tzyinc/pen/VwjgLrW?editors=0011
 #====================================================================
 def num_playlists_dp(n, l, k):
-    playlists = [[0] * (n + 1)] * (l + 1)
+    playlists = [[0] * (n + 1) for i in range(l + 1)]
     playlists[0][0] = 1
     for i in range(1, l + 1):
         for j in range(1, n + 1):
