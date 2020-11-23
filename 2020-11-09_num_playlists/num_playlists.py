@@ -108,12 +108,18 @@ def num_playlists3(n, l, k):
 # https://codepen.io/Tzyinc/pen/VwjgLrW?editors=0011
 #====================================================================
 def num_playlists_dp(n, l, k):
+    # playlists[i][j] will contain the number of length-i playlists 
+    # which uses j songs out of our n-song library
     playlists = [[0] * (n + 1) for i in range(l + 1)]
-    playlists[0][0] = 1
+    playlists[0][0] = 1 # the empty playlist contains no songs
     for i in range(1, l + 1):
         for j in range(1, n + 1):
+            # Add an unused song to make a longer playlist with one more song
             playlists[i][j] += playlists[i - 1][j - 1] * (n - j + 1)
+            # Add a previously-used song to make a longer playlist
+            # with the same number of songs
             playlists[i][j] += playlists[i - 1][j] * max(j - k, 0)
+    # Return the number of playlists that are long enough and use all the songs
     return playlists[l][n]
 
 
@@ -122,6 +128,8 @@ def num_playlists_dp(n, l, k):
 #
 # Translated from Sameer Kolhar (@kolharsam)'s Haskell solution:
 # https://repl.it/@SameerKolhar/Cassidys-Interview-Question-November-9#main.hs
+#
+# This calculates a different function, but is included for completeness.
 #====================================================================
 def product(xs):
     return reduce(mul, xs)
