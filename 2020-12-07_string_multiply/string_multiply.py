@@ -13,25 +13,22 @@ from hypothesis import given
 import hypothesis.strategies as st
 
 
+times = { (str(a), str(b)): a * b for a in range(10) for b in range(10) }
+add = { (str(a), str(b)): a + b for a in range(10) for b in range(10) }
+
+
 def string_multiply(x, y):
-    digits = dict(zip("0123456789", range(10)))
-    return str(list_multiply([digits[c] for c in x], [digits[c] for c in y]))
-
-
-def list_multiply(xs, ys):
-    xs.reverse()
-    ys.reverse()
     result = 0
     x_place = 1
-    for x in xs:
+    for xc in x[::-1]:
         col_result = 0
         y_place = 1
-        for y in ys:
-            col_result += x * y * y_place
+        for yc in y[::-1]:
+            col_result += times[(xc, yc)] * y_place
             y_place *= 10
         result += col_result * x_place
         x_place *= 10
-    return result
+    return str(result)
 
 
 def test_example():
