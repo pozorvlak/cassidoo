@@ -17,17 +17,24 @@ from hypothesis.stateful import Bundle, RuleBasedStateMachine, rule
 
 class HashMap:
     def __init__(self):
-        self.map = {}
+        self.map = []
 
     def put(self, key, value):
-        self.map[key] = value
+        self.map.insert(0, (key, value))
 
     def get(self, key):
-        return self.map.get(key, -1)
+        for (k, v) in self.map:
+            if k == key:
+                return v
+        return -1
 
     def remove(self, key):
-        if key in self.map:
-            del self.map[key]
+        deletions = []
+        for i, (k, v) in enumerate(self.map):
+            if k == key:
+                deletions.append(i)
+        for j, i in enumerate(deletions):
+            del self.map[i - j]
 
 
 class HashTableComparison(RuleBasedStateMachine):
