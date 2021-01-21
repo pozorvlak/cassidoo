@@ -11,11 +11,12 @@ following functions:
     remove(key): Remove the mapping for the value in key if it exists.
 """
 
+from hypothesis import note
 import hypothesis.strategies as st
 from hypothesis.stateful import Bundle, RuleBasedStateMachine, rule
 
 
-class HashMap:
+class AList:
     def __init__(self):
         self.map = []
 
@@ -35,6 +36,35 @@ class HashMap:
                 deletions.append(i)
         for j, i in enumerate(deletions):
             del self.map[i - j]
+
+    def __str__(self):
+        return str(self.map)
+
+
+class HashMap:
+    def __init__(self):
+        self.size = 0
+        self.map = [None]
+
+    def put(self, key, value):
+        h = hash(key) % len(self.map)
+        if self.map[h] is None:
+            self.map[h] = AList()
+        self.map[h].put(key, value)
+
+    def get(self, key):
+        h = hash(key) % len(self.map)
+        alist = self.map[h]
+        if alist is None:
+            return -1
+        assert isinstance(alist, AList)
+        return alist.get(key)
+
+    def remove(self, key):
+        h = hash(key) % len(self.map)
+        alist = self.map[h]
+        if alist is not None:
+            alist.remove(key)
 
 
 class HashTableComparison(RuleBasedStateMachine):
