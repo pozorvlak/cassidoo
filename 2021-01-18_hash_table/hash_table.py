@@ -67,16 +67,23 @@ class HashMap:
                     self.put(key, value)
         assert self.size == old_size
 
+    def hash(self, key):
+        h = 0
+        bs = bytes(key, 'utf-8') if isinstance(key, str) else bytes(key)
+        for b in bs:
+            h = (h * 37 + b)
+        return h % len(self.map)
+
     def put(self, key, value):
         if self.size == len(self.map):
             self.resize()
-        h = hash(key) % len(self.map)
+        h = self.hash(key)
         if self.map[h] is None:
             self.map[h] = AList()
         self.size += self.map[h].put(key, value)
 
     def get(self, key):
-        h = hash(key) % len(self.map)
+        h = self.hash(key)
         alist = self.map[h]
         if alist is None:
             return -1
@@ -84,7 +91,7 @@ class HashMap:
         return alist.get(key)
 
     def remove(self, key):
-        h = hash(key) % len(self.map)
+        h = self.hash(key)
         alist = self.map[h]
         if alist is not None:
             self.size -= alist.remove(key)
