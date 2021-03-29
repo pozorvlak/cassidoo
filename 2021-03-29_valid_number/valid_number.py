@@ -13,7 +13,7 @@ def valid_num(s):
 
 
 valid = ["7", "0011", "+3.14", "4.", "-.9", "-123.456", "-0.1"]
-invalid = ["abc", "1a", "e8", "–6", "-+3", "95x54e53."]
+invalid = ["abc", "1a", "e8", "–6", "-+3", "95x54e53.", "."]
 
 
 @pytest.mark.parametrize("s", valid)
