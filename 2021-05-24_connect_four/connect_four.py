@@ -20,6 +20,8 @@ def boardState():
     print(" 0 1 2 3 4 5 6")
 
 
+# Kinda pointless since I'm calculating the winner based on the last move, but
+# it was in the brief...
 def hasWon():
     return winner
 
@@ -61,11 +63,12 @@ def drop_token(column, player):
 
 
 player = 1
-while hasWon() is None:
+moves = 0
+while True:
     boardState()
     player = 1 - player
     while True:
-        column = int(input(f"{PLAYERS[player]} to move:"))
+        column = int(input(f"{PLAYERS[player]} to move: "))
         if not (0 <= column <= 6):
             print("Please enter a number between 0 and 6")
         elif highest_filled_row(column) <= 0:
@@ -73,6 +76,12 @@ while hasWon() is None:
         else:
             break
     drop_token(column, player)
-
-boardState()
-print(f"{PLAYERS[hasWon()]} has won!")
+    moves += 1
+    if hasWon() is not None:
+        boardState()
+        print(f"{PLAYERS[hasWon()]} has won!")
+        break
+    elif moves >= 6 * 7:
+        boardState()
+        print("All spaces have been filled!")
+        break
