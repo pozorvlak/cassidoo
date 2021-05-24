@@ -7,16 +7,17 @@ have functions boardState() (which returns a 2D array of the current state of
 the board) and hasWon() which returns which player has won the game (if any).
 """
 
-BOARD = [[" " for i in range(7)] for j in range(6)]
+# Emoji are two characters wide
+BOARD = [["  " for i in range(7)] for j in range(6)]
 PLAYERS = ["Red", "Yellow"]
-TOKENS = "RY"
+TOKENS = "🔴🟡"
 winner = None
 
 
 def boardState():
     for row in BOARD:
         print("".join(row))
-    print("0123456")
+    print(" 0 1 2 3 4 5 6")
 
 
 def hasWon():
@@ -25,7 +26,7 @@ def hasWon():
 
 def highest_filled_row(column):
     for i in range(6):
-        if BOARD[i][column] != " ":
+        if BOARD[i][column] != "  ":
             return i
     return 6
 
@@ -35,7 +36,7 @@ def drop_token(column, player):
     token = TOKENS[player]
     row = highest_filled_row(column) - 1
     BOARD[row][column] = token
-    if row <= 3 and all((BOARD[row + i][column] == token for i in range(4))):
+    if row <= 2 and all((BOARD[row + i][column] == token for i in range(4))):
         winner = player
         return
     for i in range(4):
