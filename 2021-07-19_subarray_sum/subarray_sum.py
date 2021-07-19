@@ -17,6 +17,7 @@ from itertools import takewhile
 
 
 def subarray_sum(xs, n):
+    """Find the number of continuous subarrays of xs with sum n"""
     m = len(xs)
     prefix_indices = defaultdict(list)
     prefix_indices[0].append(0)
@@ -27,14 +28,11 @@ def subarray_sum(xs, n):
         prefix_indices[prefix].append(i + 1)
         count += len(prefix_indices[prefix - n])
     print(prefix_indices)
-    return count
-
-
-def get_suffix_indices(xs):
-    return suffix_indices
+    return count if count > 0 else -1
 
 
 def oracle(xs, n):
+    """Naive O(n^2) solution, for testing"""
     m = len(xs)
     count = 0
     for i in range(m):
@@ -42,12 +40,16 @@ def oracle(xs, n):
             if sum(xs[i:j]) == n:
                 print(f"oracle: {(i, j + 1)}")
             count += (sum(xs[i:j]) == n)
-    return count
+    return count if count > 0 else -1
 
 
 def test_example():
     # arr[0...3], arr[1...4], arr[3...4]
     assert subarray_sum([10 , 2, -2, -20, 10], -10) == 3
+
+
+def test_none_found():
+    assert subarray_sum([1, 2, 3, 4, 5, 6], -1) == -1
 
 
 def test_oracle():

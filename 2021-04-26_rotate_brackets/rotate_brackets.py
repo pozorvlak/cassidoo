@@ -23,26 +23,22 @@ def rotate_brackets(s):
     #  3. does nesting level go negative after x?
     # if #1 == #2 and #3 is false, x is a possible starting point.
     closes_count = 0
-    max_closes = 0
-    max_net_closes = []
+    net_closes = []
     for i, c in enumerate(s):
-        max_net_closes.append(max_closes)
+        net_closes.append(closes_count)
         if c == ']':
             closes_count += 1
         elif c == '[':
             closes_count -= 1
-        max_closes = max(max_closes, closes_count)
     opens_count = 0
-    max_opens = 0
-    max_net_opens = []
+    net_opens = []
     for i in reversed(range(len(s))):
         c = s[i]
         if c == '[':
             opens_count += 1
         elif c == ']':
             opens_count -= 1
-        max_opens = max(max_opens, opens_count)
-        max_net_opens.insert(0, max_opens)
+        net_opens.insert(0, opens_count)
     for i in (reversed(range(len(s)))):
         if max_net_opens[i] == max_net_closes[i] >= 0:
             return s[i:] + s[:i]
