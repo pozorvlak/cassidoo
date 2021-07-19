@@ -19,15 +19,14 @@ from itertools import takewhile
 def subarray_sum(xs, n):
     """Find the number of continuous subarrays of xs with sum n"""
     m = len(xs)
-    prefix_indices = defaultdict(list)
-    prefix_indices[0].append(0)
+    prefix_indices = defaultdict(int)
+    prefix_indices[0] = 1   # the empty prefix has sum 0
     prefix = 0
     count = 0
     for i in range(m):
         prefix += xs[i]
-        prefix_indices[prefix].append(i + 1)
-        count += len(prefix_indices[prefix - n])
-    print(prefix_indices)
+        prefix_indices[prefix] += 1
+        count += prefix_indices[prefix - n]
     return count if count > 0 else -1
 
 
@@ -37,8 +36,6 @@ def oracle(xs, n):
     count = 0
     for i in range(m):
         for j in range(i, m + 1):
-            if sum(xs[i:j]) == n:
-                print(f"oracle: {(i, j + 1)}")
             count += (sum(xs[i:j]) == n)
     return count if count > 0 else -1
 
