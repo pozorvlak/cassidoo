@@ -17,7 +17,7 @@ def is_palindrome(s):
     if len(s) <= 1:
         return True
     mid = len(s) // 2
-    return s[:mid] == s[-mid:][::-1]
+    return s[:mid] == s[-1:-mid-1:-1]
 
 
 def p_substring(s):
