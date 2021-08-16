@@ -14,7 +14,10 @@ from hypothesis import assume, given, strategies as st
 
 
 def is_palindrome(s):
-    return s == s[::-1]
+    if len(s) <= 1:
+        return True
+    mid = len(s) // 2
+    return s[:mid] == s[-mid:][::-1]
 
 
 def p_substring(s):
@@ -64,6 +67,11 @@ def test_known_answer(s):
 def test_known_answer_odd_length(s):
     palindrome = s + s[-2::-1]
     assert p_substring("ABC" + palindrome + "XYZ") == palindrome
+
+
+@given(st.text(alphabet=ascii_lowercase))
+def test_is_palindrome(s):
+    assert is_palindrome(s) == is_palindrome_oracle(s)
 
 
 @given(st.text(alphabet=ascii_lowercase))
