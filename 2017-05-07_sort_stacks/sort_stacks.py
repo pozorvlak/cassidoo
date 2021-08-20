@@ -61,6 +61,28 @@ def sort_desc(stack):
     return sort_stack(stack, False)
 
 
+def sort_asc_2(stack):
+    # Use only a single auxilliary stack
+    aux = Stack()
+    while not stack.is_empty():
+        v = stack.pop()
+        while not aux.is_empty() and v > aux.peek():
+            stack.push(aux.pop())
+        aux.push(v)
+    copy_stack(aux, stack)
+
+
+def sort_desc_2(stack):
+    # Use only a single auxilliary stack
+    aux = Stack()
+    while not stack.is_empty():
+        v = stack.pop()
+        while not aux.is_empty() and v < aux.peek():
+            stack.push(aux.pop())
+        aux.push(v)
+    copy_stack(aux, stack)
+
+
 @given(st.lists(st.integers()))
 def test_sort_asc(xs):
     stack = Stack(xs)
@@ -72,4 +94,18 @@ def test_sort_asc(xs):
 def test_sort_desc(xs):
     stack = Stack(xs)
     sort_desc(stack)
+    assert stack.contents == sorted(xs, reverse=True)
+
+
+@given(st.lists(st.integers()))
+def test_sort_asc_2(xs):
+    stack = Stack(xs)
+    sort_asc_2(stack)
+    assert stack.contents == sorted(xs)
+
+
+@given(st.lists(st.integers()))
+def test_sort_desc_2(xs):
+    stack = Stack(xs)
+    sort_desc_2(stack)
     assert stack.contents == sorted(xs, reverse=True)
