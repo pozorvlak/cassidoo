@@ -9,6 +9,7 @@ $ evaluateExp('T|T&F^T')
 $ 4 // ((T|T)&(F^T)), (T|(T&(F^T))), (((T|T)&F)^T) and (T|((T&F)^T))
 """
 
+from functools import lru_cache
 import operator
 
 from hypothesis import given, strategies as st
@@ -29,7 +30,7 @@ def evaluations(s):
         elif s == "F":
             yield False
         else:
-            raise ValueError(f"Unrecognised character {c} at position {i}")
+            raise ValueError(f"Unrecognised character {c}")
         return
     for i, c in enumerate(s):
         if c in ops:
@@ -42,8 +43,29 @@ def oracle(s):
     return sum(evaluations(s))
 
 
+@lru_cache()
+def scores(s):
+    if len(s) == 1:
+        if s == "T":
+            return [0, 1]
+        elif s == "F":
+            return [1, 0]
+        else:
+            raise ValueError(f"Unrecognised character {c}")
+    counts = [0, 0]
+    for i, c in enumerate(s):
+        if c in ops:
+            l = scores(s[:i])
+            r = scores(s[i+1:])
+            op = ops[c]
+            for x in [0, 1]:
+                for y in [0, 1]:
+                    counts[op(x, y)] += l[x] * r[y]
+    return counts
+
+
 def evaluate_exp(s):
-    return oracle(s)
+    return scores(s)[1]
 
 
 @pytest.mark.parametrize("s, expected", [
@@ -66,7 +88,8 @@ def tree_to_str(tree):
 
 expr_tree = st.recursive(
     st.sampled_from("TF"),
-    lambda children: st.tuples(children, st.sampled_from("&|^"), children)
+    lambda children: st.tuples(children, st.sampled_from("&|^"), children),
+    max_leaves=10
 )
 
 
