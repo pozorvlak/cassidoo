@@ -10,7 +10,10 @@ $ 4 // ((T|T)&(F^T)), (T|(T&(F^T))), (((T|T)&F)^T) and (T|((T&F)^T))
 """
 
 import operator
+
+from hypothesis import given, strategies as st
 import pytest
+
 
 ops = {
     "&": operator.and_,
@@ -35,8 +38,12 @@ def evaluations(s):
             yield from (ops[c](l, r) for l in lefts for r in rights)
 
 
-def evaluate_exp(s):
+def oracle(s):
     return sum(evaluations(s))
+
+
+def evaluate_exp(s):
+    return oracle(s)
 
 
 @pytest.mark.parametrize("s, expected", [
@@ -49,3 +56,23 @@ def evaluate_exp(s):
 ])
 def test_examples(s, expected):
     assert evaluate_exp(s) == expected
+
+
+def tree_to_str(tree):
+    if isinstance(tree, tuple):
+        return tree_to_str(tree[0]) + tree[1] + tree_to_str(tree[2])
+    return tree
+
+
+expr_tree = st.recursive(
+    st.sampled_from("TF"),
+    lambda children: st.tuples(children, st.sampled_from("&|^"), children)
+)
+
+
+expr = expr_tree.map(tree_to_str)
+
+
+@given(expr)
+def test_oracle(s):
+    assert oracle(s) == evaluate_exp(s)
