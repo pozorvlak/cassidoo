@@ -13,6 +13,7 @@ from functools import lru_cache
 import operator
 
 from hypothesis import given, strategies as st
+import numpy as np
 import pytest
 
 
@@ -68,6 +69,27 @@ def evaluate_exp(s):
     return scores(s)[1]
 
 
+def evaluate_exp2(s):
+    # counts[i, j, k] is no. of ways to read s[i:j] as k
+    counts = np.zeros((len(s), len(s) + 1, 2))
+    for i, c in enumerate(s):
+        if c == 'F':
+            counts[i, i + 1, 0] = 1
+        elif c == 'T':
+            counts[i, i + 1, 1] = 1
+    for length in range(3, len(s) + 1, 2):
+        for i in range(0, len(s) - length + 1, 2):
+            j = i + length
+            for k in range(i + 1, j, 2):
+                op = ops[s[k]]
+                for x in [0, 1]:
+                    for y in [0, 1]:
+                        l = counts[i, k, x]
+                        r = counts[k + 1, j, y]
+                        counts[i, j, op(x, y)] += l * r
+    return counts[0, -1, 1]
+
+
 @pytest.mark.parametrize("s, expected", [
     # ((T|T)&(F^T)), (T|(T&(F^T))), (((T|T)&F)^T) and (T|((T&F)^T))
     ('T|T&F^T', 4),
@@ -99,3 +121,8 @@ expr = expr_tree.map(tree_to_str)
 @given(expr)
 def test_oracle(s):
     assert oracle(s) == evaluate_exp(s)
+
+
+@given(expr)
+def test_oracle2(s):
+    assert evaluate_exp2(s) == evaluate_exp(s)
