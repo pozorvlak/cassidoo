@@ -16,7 +16,7 @@ def is_square(n):
 
 def is_fib(n):
     "Is n a Fibonacci number?"
-    return is_square(5 * n * n + 4) or is_square(5 * n * n - 4)
+    return n > 0 and (is_square(5 * n * n + 4) or is_square(5 * n * n - 4))
 
 
 def previous_fibonacci(n):
@@ -45,3 +45,12 @@ def test_oracle_fib():
         assert previous_fibonacci(y) == x
         x, y = y, x + y
 
+
+def test_oracle_all():
+    answers = [-1 for i in range(1000)]
+    x, y = 1, 1
+    while y < 1000:
+        answers[y] = x
+        x, y = y, x + y
+    for i in range(1000):
+        assert previous_fibonacci(i) == answers[i], i
