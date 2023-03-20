@@ -41,11 +41,22 @@ def parse_triple(value):
 def hsl_to_rgb(h, s, l):
     s = s / 100
     l = l / 100
-    def f(n):
-        k = (n + h / 30) % 12
-        a = s * min(l, 1 - l)
-        return l - a * max(-1, min(k - 3, 9 - k, 1)) * 255
-    return (f(0), f(8), f(4))
+    c = (1 - abs(2*l - 1)) * s
+    x = c * (1 - abs((h/60) % 2 - 1))
+    m = l - c/2
+    if h < 60:
+        r, g, b = c, x, 0
+    elif h < 120:
+        r, g, b = x, c, 0
+    elif h < 180:
+        r, g, b = 0, c, x
+    elif h < 240:
+        r, g, b = 0, x, c
+    elif h < 300:
+        r, g, b = x, 0, c
+    else:
+        r, g, b = c, 0, x
+    return [int(255*(r+m)), int(255*(g+m)), int(255*(b+m))]
 
 
 def render(out_format, r, g, b):
