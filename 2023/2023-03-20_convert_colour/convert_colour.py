@@ -70,16 +70,47 @@ def render(out_format, r, g, b):
 
 
 def rgb_to_hsl(r, g, b):
-    return r, g, b
+    r = r / 255
+    g = g / 255
+    b = b / 255
+    c_max = max(r, g, b)
+    c_min = min(r, g, b)
+    delta = c_max - c_min
+    if delta == 0:
+        h = 0
+    elif c_max == r:
+        h = 60 * (((g - b) / delta) % 6)
+    elif c_max == g:
+        h = 60 * (((b - r) / delta) + 2)
+    elif c_max == b:
+        h = 60 * (((r - g) / delta) + 4)
+    l = (c_max + c_min) / 2
+    if delta == 0:
+        s = 0
+    else:
+        s = delta / (1 - abs(2*l - 1))
+    return [int(h), int(s*100), int(l*100)]
 
 
 def test_example1():
     assert convert_colour('rgb', 'hex', '(255,0,0)') == '#FF0000'
 
 
+def test_example1_inverse():
+    assert convert_colour('hex', 'rgb', '#FF0000') == '(255,0,0)'
+
+
 def test_example2():
     assert convert_colour('hsl', 'rgb', '(65,80,80)') == '(238,245,163)'
 
 
+def test_example2_inverse():
+    assert convert_colour('rgb', 'hsl', '(238,245,163)') == '(65,80,80)'
+
+
 def test_example3():
     assert convert_colour('hsl', 'hex', '(65,80,80)') == '#EEF5A3'
+
+
+def test_example3_inverse():
+    assert convert_colour('hex', 'hsl', '#EEF5A3') == '(65,80,80)'
