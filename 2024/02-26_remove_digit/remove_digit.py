@@ -16,7 +16,29 @@ from hypothesis import assume, given, strategies as st
 
 
 def remove_digit(number, digit):
-    return oracle(number, digit)
+    s = str(number)
+    d = str(digit)
+    pos = -1
+    last_pos = None
+    while True:
+        pos = s.find(d, pos + 1)
+        if pos == -1:
+            pos = last_pos
+            break
+        if pos == len(s) - 1:
+            # last digit, checking the next one would throw an error
+            break
+        elif int(s[pos + 1]) > digit:
+            # dropping digit at pos gives something greater than
+            # if we drop it any later
+            break
+        else:
+            # next digit is smaller, so save this position in
+            # case it's our least-worst option
+            last_pos = pos
+    if pos is None:
+        raise ValueError(f"{digit} not found in {number}")
+    return int(s[:pos] + s[pos + 1:])
 
 
 def oracle(number, digit):
