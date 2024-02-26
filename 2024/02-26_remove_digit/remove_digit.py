@@ -12,7 +12,14 @@ Example:
 > 231 // 231 > 123
 """
 
+from hypothesis import assume, given, strategies as st
+
+
 def remove_digit(number, digit):
+    return oracle(number, digit)
+
+
+def oracle(number, digit):
     s = str(number)
     d = str(digit)
     pos = -1
@@ -39,3 +46,9 @@ def test_example1():
 
 def test_example2():
     assert remove_digit(1231, 1) == 231 # 231 > 123
+
+
+@given(st.integers(10, 1000000), st.integers(0, 9))
+def test_oracle(number, digit):
+    assume(str(digit) in str(number))
+    assert oracle(number, digit) == remove_digit(number, digit)
