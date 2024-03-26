@@ -16,6 +16,11 @@ let map = [
 
 import numpy as np
 
+# We model the islands using a disjoint-set forest
+# (https://en.wikipedia.org/wiki/Disjoint-set_data_structure), whose amortised
+# runtime grows with the *inverse Ackermann function* (which is to say, as near
+# constant as makes no odds)
+
 def find(parents, x):
     root = x
     while parents[root] != root:
