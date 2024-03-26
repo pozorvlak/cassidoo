@@ -32,12 +32,15 @@ def find(parents, x):
     return root
 
 
-def union(parents, x, y):
+def union(parents, sizes, x, y):
     x = find(parents, x)
     y = find(parents, y)
     if x != y:
-        # Make x the new root; for simplicity, don't bother about rebalancing
+        # Make the smaller tree a child of the bigger one
+        if sizes[x] < sizes[y]:
+            x, y = y, x
         parents[y] = x
+        sizes[x] = sizes[x] + sizes[y]
     return x
 
 
@@ -46,24 +49,22 @@ def largest_island(chart):
     chart = np.array(chart)
     height, width = chart.shape
     parents = np.full((chart.size,), -1)
+    sizes = np.zeros((chart.size,), dtype=int)
     for (i, j) in zip(*np.nonzero(chart)):
         up = i > 0 and chart[i-1, j]
         left = j > 0 and chart[i, j-1]
+        my_idx = width * i + j
         if up and left:
-            parent = union(parents, width * (i - 1) + j, width * i + j - 1)
+            parent = union(parents, sizes, width * (i - 1) + j, width * i + j - 1)
         elif up:
             parent = find(parents, width * (i - 1) + j)
         elif left:
             parent = find(parents, width * i + j - 1)
         else:
-            parent = width * i + j
-        parents[width * i + j] = parent
-    # Ensure everything points to the root node, for accurate counting
-    for (i, j) in zip(*np.nonzero(chart)):
-        parents[width * i + j] = find(parents, width * i + j)
-    _, counts = np.unique(parents, return_counts=True)
-    # The first entry corresponds to -1, which is water
-    return np.max(counts[1:])
+            parent = my_idx
+        parents[my_idx] = parent
+        sizes[parent] += 1
+    return np.max(sizes)
 
 
 def test_example():
