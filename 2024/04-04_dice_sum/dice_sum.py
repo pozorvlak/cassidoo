@@ -15,6 +15,7 @@ $ 6 // 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
 from functools import cache
 
 import numpy as np
+from numpy.linalg import matrix_power
 
 
 def dice_sum_matrix(num_dice, num_sides, target):
@@ -39,6 +40,15 @@ def dice_sum_matrix(num_dice, num_sides, target):
     return ways[-1]
 
 
+def dice_sum_numpy(num_dice, num_sides, target):
+    ones = np.ones((target + 1, target + 1), dtype=int)
+    matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
+    #  matrix[j, k] is the number of ways of outputting k given input j
+    #  and one die roll.
+    # Multiplying by `matrix` simulates one more roll.
+    return matrix_power(matrix, num_dice)[0, target]
+
+
 @cache
 def dice_sum_recursive(num_dice, num_sides, target):
     if num_dice == 1:
@@ -52,6 +62,7 @@ def dice_sum_recursive(num_dice, num_sides, target):
 
 def dice_sum(num_dice, num_sides, target):
     return dice_sum_matrix(num_dice, num_sides, target)
+    # return dice_sum_numpy(num_dice, num_sides, target)
     # return dice_sum_recursive(num_dice, num_sides, target)
 
 
