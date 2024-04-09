@@ -16,14 +16,18 @@ from functools import cache
 
 
 @cache
-def dice_sum(num_dice, num_sides, target):
+def dice_sum_recursive(num_dice, num_sides, target):
     if num_dice == 1:
-        return 1 if target <= num_sides else 0
+        return 1 if 1 <= target <= num_sides else 0
     else:
         return sum(
-            dice_sum(num_dice - 1, num_sides, target - i)
+            dice_sum_recursive(num_dice - 1, num_sides, target - i)
             for i in range(1, num_sides + 1)
         )
+
+
+def dice_sum(num_dice, num_sides, target):
+    return dice_sum_recursive(num_dice, num_sides, target)
 
 
 def test_example1():
@@ -36,5 +40,17 @@ def test_example2():
     assert dice_sum(2, 6, 7) == 6
 
 
+def test_example3():
+    assert dice_sum(1, 4, 0) == 0
+
+
+def test_example4():
+    assert dice_sum(2, 2, 3) == 2
+
+
 def test_big_example():
-    assert dice_sum(10, 20, 173) == 94040320
+    assert dice_sum(10, 20, 173) == 94028880
+
+
+def test_bigger_example():
+    assert dice_sum(20, 20, 364) == 280495073622225
