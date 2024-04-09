@@ -12,7 +12,10 @@ $ 1 // there is only one die, and one way to get 3
 $ dice_sum(2,m,7)
 $ 6 // 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
 """
+from functools import cache
 
+
+@cache
 def dice_sum(num_dice, num_sides, target):
     if num_dice == 1:
         return 1 if target <= num_sides else 0
@@ -31,3 +34,7 @@ def test_example1():
 def test_example2():
     # 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
     assert dice_sum(2, 6, 7) == 6
+
+
+def test_big_example():
+    assert dice_sum(10, 20, 173) == 94040320
