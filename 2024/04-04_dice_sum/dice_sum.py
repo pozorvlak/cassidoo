@@ -19,9 +19,9 @@ from numpy.linalg import matrix_power
 
 
 def dice_sum_matrix(num_dice, num_sides, target):
-    ones = np.ones((target + 1, target + 1), dtype=int)
+    ones = np.ones((target + 1, target + 1), dtype=np.uint)
     matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
-    ways = np.zeros(target + 1, dtype=int)
+    ways = np.zeros(target + 1, dtype=np.uint)
     ways[0] = 1
     if num_dice % 2:
         ways = ways @ matrix
@@ -41,7 +41,7 @@ def dice_sum_matrix(num_dice, num_sides, target):
 
 
 def dice_sum_numpy(num_dice, num_sides, target):
-    ones = np.ones((target + 1, target + 1), dtype=int)
+    ones = np.ones((target + 1, target + 1), dtype=np.uint)
     matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
     #  matrix[j, k] is the number of ways of outputting k given input j
     #  and one die roll.
@@ -61,9 +61,9 @@ def dice_sum_recursive(num_dice, num_sides, target):
 
 
 def dice_sum(num_dice, num_sides, target):
-    return dice_sum_matrix(num_dice, num_sides, target)
+    # return dice_sum_matrix(num_dice, num_sides, target)
     # return dice_sum_numpy(num_dice, num_sides, target)
-    # return dice_sum_recursive(num_dice, num_sides, target)
+    return dice_sum_recursive(num_dice, num_sides, target)
 
 
 def test_example1():
@@ -90,3 +90,7 @@ def test_big_example():
 
 def test_bigger_example():
     assert dice_sum(20, 20, 364) == 280495073622225
+
+
+def test_more_dice_small_sum():
+    assert dice_sum(30, 20, 78) == 1322270553236871418400
