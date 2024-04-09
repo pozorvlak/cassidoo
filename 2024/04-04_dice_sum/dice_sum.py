@@ -17,6 +17,7 @@ $ dice_sum(2,m,7)
 $ 6 // 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
 """
 from functools import cache
+from math import factorial
 
 import numpy as np
 from numpy.linalg import matrix_power
@@ -63,11 +64,33 @@ def dice_sum_recursive(num_dice, num_sides, target):
             for i in range(1, num_sides + 1)
         )
 
+def dice_sum_unordered(num_dice, num_sides, target):
+    # Find all the ways of making target with descending scores,
+    # then apply the combination formula to find the total count.
+    # This is much slower than the other methods!
+    return go(num_dice, num_sides, target, factorial(num_dice), 0)
+
+
+@cache
+def go(num_dice, num_sides, target, count, current):
+    if num_sides == 0:
+        return 0
+    if num_dice == 0:
+        if target != 0:
+            return 0
+        return count / factorial(current)
+    # What if we take the highest possible score?
+    count_if_take = go(num_dice - 1, num_sides, target - num_sides, count, current + 1)
+    # What if we don't?
+    count_if_not = go(num_dice, num_sides - 1, target, count / factorial(current), 0)
+    return count_if_take + count_if_not
+
 
 def dice_sum(num_dice, num_sides, target):
     # return dice_sum_matrix(num_dice, num_sides, target)
     # return dice_sum_numpy(num_dice, num_sides, target)
     return dice_sum_recursive(num_dice, num_sides, target)
+    # return dice_sum_unordered(num_dice, num_sides, target)
 
 
 def test_example1():
