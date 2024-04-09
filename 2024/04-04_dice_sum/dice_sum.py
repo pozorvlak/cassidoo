@@ -18,20 +18,24 @@ import numpy as np
 
 
 def dice_sum_matrix(num_dice, num_sides, target):
-    # print(f"num_dice = {num_dice}, num_sides = {num_sides}, target = {target}")
     ones = np.ones((target + 1, target + 1), dtype=int)
     matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
     ways = np.zeros(target + 1, dtype=int)
     ways[0] = 1
-    # print(f"num_dice = {num_dice}\nways = {ways}\nmatrix =\n{matrix}\n")
     if num_dice % 2:
         ways = ways @ matrix
+    # At the start of the i'th iteration:
+    #  - ways[j] is dice_sum(num_dice % 2 ** (i + 1), num_sides, j)
+    #  - matrix[j, k] is the number of ways of outputting k given input j
+    #    and 2 ** i dice rolls.
+    # Multiplying by `matrix` simulates one more roll, but we save operations
+    # by applying 2 ** n rolls at once for n <= log(num_dice).
+    # At each stage we square `matrix` and apply the next bit of num_dice.
     while num_dice > 0:
         matrix = matrix @ matrix
         num_dice = num_dice // 2
         if num_dice % 2:
             ways = ways @ matrix
-        # print(f"num_dice = {num_dice}\nways = {ways}\nmatrix =\n{matrix}\n")
     return ways[-1]
 
 
