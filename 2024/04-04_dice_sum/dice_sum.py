@@ -1,5 +1,9 @@
 """
-Imagine you have n dice, and each die has m faces on it (so the numbers are from 1 to m). Write a function where, given an integer target, it returns the number of possible ways to roll the dice to get the sum of target face up. You can safely assume m will never be larger than 20 (so you don't have to deal with mega huge numbers).
+Imagine you have n dice, and each die has m faces on it (so the numbers are
+from 1 to m). Write a function where, given an integer target, it returns the
+number of possible ways to roll the dice to get the sum of target face up. You
+can safely assume m will never be larger than 20 (so you don't have to deal
+with mega huge numbers).
 
 Example:
 
