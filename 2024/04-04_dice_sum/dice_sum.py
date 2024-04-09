@@ -14,6 +14,24 @@ $ 6 // 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
 """
 from functools import cache
 
+import numpy as np
+
+
+def dice_sum_matrix(num_dice, num_sides, target):
+    print(f"num_dice = {num_dice}, num_sides = {num_sides}, target = {target}")
+    ones = np.ones((target + 1, target + 1), dtype=int)
+    matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
+    ways = np.zeros(target + 1, dtype=int)
+    ways[0] = 1
+    print(f"num_dice = {num_dice}\nways = {ways}\nmatrix =\n{matrix}\n")
+    while num_dice > 0:
+        if num_dice % 2:
+            ways = ways @ matrix
+        matrix = matrix @ matrix
+        num_dice = num_dice // 2
+        print(f"num_dice = {num_dice}\nways = {ways}\nmatrix =\n{matrix}\n")
+    return ways[-1]
+
 
 @cache
 def dice_sum_recursive(num_dice, num_sides, target):
