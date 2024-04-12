@@ -105,6 +105,26 @@ def go(num_dice, num_sides, target, count, current):
     return count_if_take + count_if_not
 
 
+# By Dan Piponi, https://godbolt.org/z/9b881jKTY
+@cache
+def dice_sum_dan(n, m, t):
+    if n == 1:
+        if t >= 1 and t <= m:
+            return 1
+        else:
+            return 0
+    h = n // 2
+    k = n - h
+
+    min_u = max(h, t - m * k)
+    max_u = min(h * m, t - k)
+
+    c = 0
+    for u in range(min_u, max_u + 1):
+        c += dice_sum_dan(h, m, u) * dice_sum_dan(k, m, t - u)
+    return c
+
+
 def dice_sum(num_dice, num_sides, target):
     # return dice_sum_matrix(num_dice, num_sides, target)
     # return dice_sum_numpy(num_dice, num_sides, target)
