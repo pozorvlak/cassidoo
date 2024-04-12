@@ -18,12 +18,16 @@ $ 6 // 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
 """
 from functools import cache
 from math import factorial
+from timeit import timeit
 
 import numpy as np
 from numpy.linalg import matrix_power
 
 
 def dice_sum_matrix(num_dice, num_sides, target):
+    # Replace k with m + 1 - k throughout to get a way to make (m+1)*n - t
+    # e.g for d6, 1 + 4 = 6; flipping, 5 + 3 = 14 - 6 = 8.
+    target = min(target, (num_sides + 1) * num_dice - target)
     ones = np.ones((target + 1, target + 1), dtype=np.uint)
     matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
     ways = np.zeros(target + 1, dtype=np.uint)
@@ -46,6 +50,9 @@ def dice_sum_matrix(num_dice, num_sides, target):
 
 
 def dice_sum_numpy(num_dice, num_sides, target):
+    # Replace k with m + 1 - k throughout to get a way to make (m+1)*n - t
+    # e.g for d6, 1 + 4 = 6; flipping, 5 + 3 = 14 - 6 = 8.
+    target = min(target, (num_sides + 1) * num_dice - target)
     ones = np.ones((target + 1, target + 1), dtype=np.uint)
     matrix = np.triu(ones, 1) - np.triu(ones, num_sides + 1)
     #  matrix[j, k] is the number of ways of outputting k given input j
@@ -58,6 +65,10 @@ def dice_sum_numpy(num_dice, num_sides, target):
 def dice_sum_recursive(num_dice, num_sides, target):
     if num_dice == 1:
         return 1 if 1 <= target <= num_sides else 0
+    elif target > (num_sides + 1) * num_dice / 2:
+        # Replace k with m + 1 - k throughout to get a way to make (m+1)*n - t
+        # e.g for d6, 1 + 4 = 6; flipping, 5 + 3 = 14 - 6 = 8.
+        return dice_sum_recursive(num_dice, num_sides, (num_sides + 1) * num_dice - target)
     else:
         return sum(
             dice_sum_recursive(num_dice - 1, num_sides, target - i)
@@ -79,6 +90,10 @@ def go(num_dice, num_sides, target, count, current):
         if target != 0:
             return 0
         return count / factorial(current)
+    if target > (num_sides + 1) * num_dice / 2:
+        # Replace k with m + 1 - k throughout to get a way to make (m+1)*n - t
+        # e.g for d6, 1 + 4 = 6; flipping, 5 + 3 = 14 - 6 = 8.
+        return go(num_dice, num_sides, (num_sides + 1) * num_dice - target, count, current)
     # What if we take the highest possible score?
     count_if_take = go(num_dice - 1, num_sides, target - num_sides, count, current + 1)
     # What if we don't?
@@ -111,6 +126,10 @@ def test_example4():
     assert dice_sum(2, 2, 3) == 2
 
 
+def test_symmetry():
+    assert dice_sum(3, 6, 17) == dice_sum(3, 6, 4)
+
+
 def test_big_example():
     assert dice_sum(10, 20, 173) == 94028880
 
@@ -121,3 +140,10 @@ def test_bigger_example():
 
 def test_more_dice_small_sum():
     assert dice_sum(30, 20, 78) == 1322270553236871418400
+
+
+if __name__ == '__main__':
+    print(timeit('dice_sum_recursive(50, 20, 864)', setup='dice_sum_recursive.cache_clear()', globals=globals()))
+    # print(timeit('dice_sum_unordered(20, 20, 364)', setup='go.cache_clear()', globals=globals()))
+    # print(timeit('dice_sum_matrix(20, 20, 364)', globals=globals(), number=1000))
+    # print(timeit('dice_sum_numpy(20, 20, 364)', globals=globals(), number=1000))
