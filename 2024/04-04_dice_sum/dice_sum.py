@@ -18,7 +18,7 @@ $ 6 // 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1
 """
 from functools import cache
 from math import factorial
-from timeit import timeit
+from timeit import Timer
 
 import numpy as np
 from numpy.linalg import matrix_power
@@ -166,8 +166,15 @@ def test_more_dice_small_sum():
     assert dice_sum(30, 20, 78) == 1322270553236871418400
 
 
+def time_fn(f, setup):
+    timer = Timer(f"{f.__name__}(30, 20, 364)", setup=setup, globals=globals())
+    loops, time = timer.autorange()
+    print(f"{f.__name__}: {time * 1000 / loops}ms")
+
+
 if __name__ == '__main__':
-    print(timeit('dice_sum_recursive(50, 20, 864)', setup='dice_sum_recursive.cache_clear()', globals=globals()))
-    # print(timeit('dice_sum_unordered(20, 20, 364)', setup='go.cache_clear()', globals=globals()))
-    # print(timeit('dice_sum_matrix(20, 20, 364)', globals=globals(), number=1000))
-    # print(timeit('dice_sum_numpy(20, 20, 364)', globals=globals(), number=1000))
+    time_fn(dice_sum_recursive, "dice_sum_recursive.cache_clear()")
+    time_fn(dice_sum_unordered, "go.cache_clear()")
+    time_fn(dice_sum_matrix, "pass")
+    time_fn(dice_sum_numpy, "pass")
+    time_fn(dice_sum_dan, "pass")
