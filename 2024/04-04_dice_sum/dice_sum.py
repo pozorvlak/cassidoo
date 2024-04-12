@@ -169,7 +169,7 @@ def test_more_dice_small_sum():
 def time_fn(f, setup):
     timer = Timer(f"{f.__name__}(30, 20, 364)", setup=setup, globals=globals())
     loops, time = timer.autorange()
-    print(f"{f.__name__}: {time * 1000 / loops}ms")
+    print(f"{f.__name__}: {time * 1000000 / loops}us")
 
 
 if __name__ == '__main__':
