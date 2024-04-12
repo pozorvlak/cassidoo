@@ -63,6 +63,8 @@ def dice_sum_numpy(num_dice, num_sides, target):
 
 @cache
 def dice_sum_recursive(num_dice, num_sides, target):
+    if target < 1 or target > num_sides * num_dice:
+        return 0
     if num_dice == 1:
         return 1 if 1 <= target <= num_sides else 0
     elif target > (num_sides + 1) * num_dice / 2:
@@ -90,7 +92,9 @@ def go(num_dice, num_sides, target, count, current):
         if target != 0:
             return 0
         return count / factorial(current)
-    if target > (num_sides + 1) * num_dice / 2:
+    if target < 1 or target > num_sides * num_dice:
+        return 0
+    elif target > (num_sides + 1) * num_dice / 2:
         # Replace k with m + 1 - k throughout to get a way to make (m+1)*n - t
         # e.g for d6, 1 + 4 = 6; flipping, 5 + 3 = 14 - 6 = 8.
         return go(num_dice, num_sides, (num_sides + 1) * num_dice - target, count, current)
