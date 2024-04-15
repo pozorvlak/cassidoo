@@ -13,6 +13,8 @@ Example:
 > 2 // "ab", "bc", or "ca"
 """
 
+from hypothesis import given, strategies as st
+
 
 def unique_substr(word):
     best_known = 2
@@ -22,6 +24,10 @@ def unique_substr(word):
             if len(set(word[i:j])) == 2:
                 best_known = j - i
     return best_known
+
+
+def oracle(word):
+    return unique_substr(word)
 
 
 def test_example1():
@@ -34,3 +40,8 @@ def test_example2():
 
 def test_example3():
     assert unique_substr('abcabcabc') == 2 # "ab", "bc", or "ca"
+
+
+@given(word=st.text('abcdefghijklmnopqrstuvwxyz'))
+def test_oracle(word):
+    assert oracle(word) == unique_substr(word)
