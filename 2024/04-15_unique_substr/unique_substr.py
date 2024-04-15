@@ -2,6 +2,9 @@
 Given a string str, write a function to determine the longest substring
 containing only two unique characters.
 
+[I'm interpreting this as "at most two unique characters", to handle strings
+like "" and "aaaaaaaaa".]
+
 Example:
 
 > unique_substr('eceba')
