@@ -105,6 +105,32 @@ def go(num_dice, num_sides, target, count, current):
     return count_if_take + count_if_not
 
 
+@cache
+def dice_sum_unordered2(num_dice, num_sides, target):
+    if target < num_dice or target > num_sides * num_dice:
+        return 0
+    if num_dice == 0:
+        # Target must be zero because of previous condition
+        return 1
+    if num_dice == 1:
+        return 1
+    if target > (num_sides + 1) * num_dice / 2:
+        # Replace k with m + 1 - k throughout to get a way to make (m+1)*n - t
+        # e.g for d6, 1 + 4 = 6; flipping, 5 + 3 = 14 - 6 = 8.
+        return dice_sum_unordered2(num_dice, num_sides, (num_sides + 1) * num_dice - target)
+    numerator, denominator = 1, 1
+    count = 0
+    for i in range(0, target // num_sides + 1):
+        tail_count = dice_sum_unordered2(num_dice - i, num_sides - 1, target - i * num_sides)
+        # If i dice have the max score, total arrangements = n!(rest)/i!(n-i)!
+        # because (rest) already contains a factor of (n-i)!
+        if i > 0:
+            numerator *= (num_dice - i + 1)
+            denominator *= i
+        count += numerator * tail_count // denominator
+    return count
+
+
 # By Dan Piponi, https://godbolt.org/z/9b881jKTY
 @cache
 def dice_sum_dan(n, m, t):
@@ -128,8 +154,9 @@ def dice_sum_dan(n, m, t):
 def dice_sum(num_dice, num_sides, target):
     # return dice_sum_matrix(num_dice, num_sides, target)
     # return dice_sum_numpy(num_dice, num_sides, target)
-    return dice_sum_recursive(num_dice, num_sides, target)
+    # return dice_sum_recursive(num_dice, num_sides, target)
     # return dice_sum_unordered(num_dice, num_sides, target)
+    return dice_sum_unordered2(num_dice, num_sides, target)
 
 
 def test_example1():
@@ -148,6 +175,10 @@ def test_example3():
 
 def test_example4():
     assert dice_sum(2, 2, 3) == 2
+
+
+def test_example5():
+    assert dice_sum(3, 6, 4) == 3
 
 
 def test_symmetry():
@@ -175,6 +206,7 @@ def time_fn(f, setup):
 if __name__ == '__main__':
     time_fn(dice_sum_recursive, "dice_sum_recursive.cache_clear()")
     time_fn(dice_sum_unordered, "go.cache_clear()")
+    time_fn(dice_sum_unordered2, "dice_sum_unordered2.cache_clear()")
     time_fn(dice_sum_matrix, "pass")
     time_fn(dice_sum_numpy, "pass")
     time_fn(dice_sum_dan, "pass")
