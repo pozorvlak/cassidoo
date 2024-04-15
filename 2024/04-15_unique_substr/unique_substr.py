@@ -15,12 +15,12 @@ Example:
 
 
 def unique_substr(word):
-    best_known = 0
-    for i in range(len(word)):
-        for j in range(i, len(word) + 1):
+    best_known = 2
+    for i in range(len(word) - 1):
+        # no point considering substrings shorter than best_known
+        for j in range(i + best_known + 1, len(word) + 1):
             if len(set(word[i:j])) == 2:
-                if best_known < (j - i):
-                    best_known = j - i
+                best_known = j - i
     return best_known
 
 
