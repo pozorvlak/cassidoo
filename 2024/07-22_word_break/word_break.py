@@ -18,13 +18,20 @@ Example:
 // "aaaaaaaa" can be segmented in multiple ways such as "aa aa aa aa" or "aaa
 // aa aaa" where "aa" and "aaa" are in the dictionary.
 """
+from functools import lru_cache
+
 
 def word_break(s, words):
+    return _word_break(s, tuple(words))
+
+
+@lru_cache
+def _word_break(s, words):
     if s == "":
         return True
     for w in words:
         if s.startswith(w):
-            if word_break(s[len(w):], words):
+            if _word_break(s[len(w):], words):
                 return True
     return False
 
