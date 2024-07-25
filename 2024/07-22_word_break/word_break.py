@@ -65,9 +65,30 @@ def test_example3():
     # "aaa aa aaa" where "aa" and "aaa" are in the dictionary.
 
 
-@given(
-    s=st.text(alphabet=ascii_lowercase, max_size=100),
-    words=st.lists(st.text(alphabet=ascii_lowercase, max_size=10), max_size=100)
-)
+def word_lists():
+    words = st.text(alphabet=ascii_lowercase, max_size=10)
+    return st.lists(words, min_size=1, max_size=100)
+
+
+@given(s=st.text(alphabet=ascii_lowercase, max_size=100), words=word_lists())
 def test_oracle(s, words):
        assert word_break(s, words) == oracle(s, words)
+
+
+@st.composite
+def matching_string_and_words(draw):
+    words = draw(word_lists())
+    selection = draw(st.lists(st.sampled_from(words)))
+    return "".join(selection), words
+
+
+@given(matching_string_and_words())
+def test_synthetic_yes(string_and_words):
+    s, words = string_and_words
+    assert word_break(s, words)
+
+
+@given(matching_string_and_words())
+def test_synthetic_no(string_and_words):
+    s, words = string_and_words
+    assert not word_break(s + "!", words)
